@@ -1,0 +1,23 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Next.js
+.next/
+out/
+build/
+
+# Env files
+.env
+.env.local
+
+# Database
+*.sqlite
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
