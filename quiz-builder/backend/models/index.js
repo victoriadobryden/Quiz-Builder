@@ -1,6 +1,11 @@
 const { Quiz } = require("./Quiz");
 const { Question } = require("./Question");
 const { Option } = require("./Option");
+const Category = require("./Category");
+
+// Category -> Quizzes
+Category.hasMany(Quiz, { foreignKey: "categoryId", as: "quizzes" });
+Quiz.belongsTo(Category, { foreignKey: "categoryId", as: "category" });
 
 // Quiz -> Questions
 Quiz.hasMany(Question, { foreignKey: "quizId", as: "questions", onDelete: "CASCADE", hooks: true });
@@ -15,4 +20,4 @@ Question.hasMany(Option, {
 });
 Option.belongsTo(Question, { foreignKey: "questionId", as: "question" });
 
-module.exports = { Quiz, Question, Option };
+module.exports = { Quiz, Question, Option, Category };

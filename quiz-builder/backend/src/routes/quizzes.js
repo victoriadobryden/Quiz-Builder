@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { Quiz, Question, Option } = require("../../models");
+const { Quiz, Question, Option, Category } = require("../../models");
 const { sequelize } = require("../../db/db");
 const { validateCreateQuiz } = require("../validators/validators");
 
@@ -24,7 +24,7 @@ router.post("/", async (req, res) => {
   const dto = req.body;
 
   const result = await sequelize.transaction(async (t) => {
-    const quiz = await Quiz.create({ title: dto.title }, { transaction: t });
+    const quiz = await Quiz.create({ title: dto.title, categoryId: dto.categoryId }, { transaction: t });
 
     for (const q of dto.questions) {
       if (q.type === "BOOLEAN") {
@@ -61,7 +61,10 @@ router.post("/", async (req, res) => {
     }
 
     return Quiz.findByPk(quiz.id, {
-      include: [{ model: Question, as: "questions", include: [{ model: Option, as: "options" }] }],
+      include: [
+        { model: Question, as: "questions", include: [{ model: Option, as: "options" }] },
+        { model: Category, as: "category" }
+      ],
       transaction: t,
     });
   });
@@ -73,10 +76,17 @@ router.post("/", async (req, res) => {
  * GET /quizzes
  * -> [{id,title,questionCount}]
  */
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+  const { categoryId } = req.query;
+  const where = categoryId ? { categoryId } : {};
+
   const quizzes = await Quiz.findAll({
+    where,
     order: [["createdAt", "DESC"]],
-    include: [{ model: Question, as: "questions", attributes: ["id"] }],
+    include: [
+      { model: Question, as: "questions", attributes: ["id"] },
+      { model: Category, as: "category" }
+    ],
   });
 
   res.json(
@@ -84,6 +94,12 @@ router.get("/", async (_req, res) => {
       id: q.id,
       title: q.title,
       questionCount: q.questions?.length || 0,
+      category: q.category ? {
+        id: q.category.id,
+        name: q.category.name,
+        slug: q.category.slug,
+        icon: q.category.icon,
+      } : null,
     }))
   );
 });
@@ -94,7 +110,10 @@ router.get("/", async (_req, res) => {
  */
 router.get("/:id", async (req, res) => {
   const quiz = await Quiz.findByPk(req.params.id, {
-    include: [{ model: Question, as: "questions", include: [{ model: Option, as: "options" }] }],
+    include: [
+      { model: Question, as: "questions", include: [{ model: Option, as: "options" }] },
+      { model: Category, as: "category" }
+    ],
   });
 
   if (!quiz) return res.status(404).json({ message: "Quiz not found" });

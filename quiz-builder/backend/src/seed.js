@@ -1,5 +1,5 @@
 const { sequelize } = require("../db/db");
-const { Quiz, Question, Option } = require("../models");
+const { Quiz, Question, Option, Category } = require("../models");
 
 async function seed() {
   await sequelize.authenticate();
@@ -11,10 +11,63 @@ async function seed() {
   await Option.destroy({ where: {} });
   await Question.destroy({ where: {} });
   await Quiz.destroy({ where: {} });
+  await Category.destroy({ where: {} });
 
-  // створюємо квіз
+  // створюємо категорії (шкільні предмети)
+  const mathCategory = await Category.create({
+    name: "Mathematics",
+    slug: "mathematics",
+    icon: "🔢",
+  });
+
+  const biologyCategory = await Category.create({
+    name: "Biology",
+    slug: "biology",
+    icon: "🧬",
+  });
+
+  const physicsCategory = await Category.create({
+    name: "Physics",
+    slug: "physics",
+    icon: "⚛️",
+  });
+
+  const chemistryCategory = await Category.create({
+    name: "Chemistry",
+    slug: "chemistry",
+    icon: "🧪",
+  });
+
+  const historyCategory = await Category.create({
+    name: "History",
+    slug: "history",
+    icon: "📜",
+  });
+
+  const geographyCategory = await Category.create({
+    name: "Geography",
+    slug: "geography",
+    icon: "🌍",
+  });
+
+  const literatureCategory = await Category.create({
+    name: "Literature",
+    slug: "literature",
+    icon: "📚",
+  });
+
+  const languageCategory = await Category.create({
+    name: "Language",
+    slug: "language",
+    icon: "🗣️",
+  });
+
+  console.log("✅ Created 8 categories");
+
+  // створюємо квіз з математики
   const quiz = await Quiz.create({
-    title: "Demo Quiz",
+    title: "Demo Math Quiz",
+    categoryId: mathCategory.id,
   });
 
   // BOOLEAN

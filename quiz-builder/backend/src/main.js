@@ -5,6 +5,7 @@ const cors = require("cors");
 const { sequelize } = require("../db/db");
 require("../models"); // register models + relations
 const { quizzesRouter } = require("./routes/quizzes");
+const categoriesRouter = require("./routes/categories");
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -18,6 +19,7 @@ app.use(
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/quizzes", quizzesRouter);
+app.use("/categories", categoriesRouter);
 
 async function start() {
   await sequelize.authenticate();
